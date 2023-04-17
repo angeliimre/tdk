@@ -14,39 +14,35 @@ hist(adatok$rel_gyak)
 adatok["h_gyakorisag"]
 
 summary(adatok$rel_gyak)
+summary(adatok$h_gyakorisag)
 
 library(psych)
 describe(adatok$h_gyakorisag)
 describe(adatok$rel_gyak)
 
-adatok[adatok["H_Gyakoriság"]>0,"Diagnózis"]
+adatok[adatok["h_gyakorisÃ¡g"]>0,"DiagnÃ³zis"]
 
 
 r_gyakoriak=adatok[order(-adatok["rel_gyak"]),]
 r_gyakoriak=r_gyakoriak[1:5,]
 
-r_gyakori=adatok[order(-adatok["rel_gyak"]),]
-r_gyakori=r_gyakori[1:20,]
-
 h_gyakoriak=adatok[order(-adatok["h_gyakorisag"]),]
 h_gyakoriak=h_gyakoriak[1:3,]
 
-sum(gyakoriak["Gyakoriság"])
-
 gy=function(x){
-  if(x%in%r_gyakoriak$Diagnózis|x%in%h_gyakoriak$Diagnózis){
+  if(x%in%r_gyakoriak$DiagnÃ³zis|x%in%h_gyakoriak$DiagnÃ³zis){
     return(x)
   }
   return("")
 }
-gy("refluxbetegség")
+gy("refluxbetegsÃ©g")
 
-adatok$labels=lapply(adatok$Diagnózis,gy)
+adatok$labels=lapply(adatok$DiagnÃ³zis,gy)
 
-list(gyakoriak["Diagnózis"])
+list(gyakoriak["DiagnÃ³zis"])
 
 library(ggplot2)
-ggplot(data=adatok,aes(x=h_gyakorisag,y=rel_gyak,label=Diagnózis))+geom_point(size = 2,alpha = 0.6)+
+ggplot(data=adatok,aes(x=h_gyakorisag,y=rel_gyak,label=DiagnÃ³zis))+geom_point(size = 2,alpha = 0.6)+
   theme_bw()+
   geom_text(aes(label=labels),hjust=0, vjust=0)+
   geom_smooth(method="lm",se=FALSE)
@@ -54,27 +50,26 @@ ggplot(data=adatok,aes(x=h_gyakorisag,y=rel_gyak,label=Diagnózis))+geom_point(si
 model=lm(data=adatok,formula=rel_gyak~h_gyakorisag)
 
 summary(model)
-model$coefficients[1]+model$coefficients[2]*adatok[adatok$Diagnózis=="refluxbetegség","h_gyakorisag"]
+model$coefficients[1]+model$coefficients[2]*adatok[adatok$DiagnÃ³zis=="refluxbetegsÃ©g","h_gyakorisag"]
 
-adatok[adatok$Diagnózis=="refluxbetegség","rel_gyak"]
+adatok[adatok$DiagnÃ³zis=="refluxbetegsÃ©g","rel_gyak"]
 
-cor(adatok$Gyakoriság,adatok$H_Gyakoriság)
-
+r_gyakori=adatok[order(-adatok["rel_gyak"]),]
+r_gyakori=r_gyakori[1:20,]
 
 stat <- read_excel("stat.xlsx")
 stat=as.data.frame(stat)
 stat<-stat[,c("nem","bet","kor")]
-stat2=stat[stat$bet%in%c(r_gyakori["Diagnózis"])$Diagnózis,]
+stat2=stat[stat$bet%in%c(r_gyakori["DiagnÃ³zis"])$DiagnÃ³zis,]
 nrow(stat)
 stat[1:10,]
 
-f=nrow(stat[stat$nem=="Férfi",])
-n=nrow(stat[stat$nem=="Nõ",])
+f=nrow(stat[stat$nem=="FÃ©rfi",])
+n=nrow(stat[stat$nem=="NÅ‘",])
 f/(f+n)
 n/(f+n)
 
-r_gyakori=adatok[order(-adatok["rel_gyak"]),]
-r_gyakori=r_gyakori[1:20,]
+
 
 ggplot(data=stat2,aes(x=bet,fill=nem))+geom_bar(position = "fill")+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 prop.table(table(stat2$bet,stat2$nem),1)
@@ -82,13 +77,17 @@ library(questionr)
 cramer.v(table(stat$bet,stat$nem))
 
 r_gyakori=r_gyakori[1:3,]
-stat3=stat[stat$bet%in%c(r_gyakori["Diagnózis"])$Diagnózis,]
+stat3=stat[stat$bet%in%c(r_gyakori["DiagnÃ³zis"])$DiagnÃ³zis,]
 
 ggplot(data=stat2,aes(y=kor,fill=bet))+geom_boxplot()
 by(stat3$kor,stat3$bet,summary)
 vh=summary(aov(kor~bet,data=stat))
+
 varhanyados=vh[[1]]$`Sum Sq`[1]/(vh[[1]]$`Sum Sq`[1]+vh[[1]]$`Sum Sq`[2])
 varhanyados^(1/2)
+
+stat$nem=as.factor(stat$nem)
+stat$bet=as.factor(stat$bet)
 
 model2=lm(kor~.,data=stat)
 summa<-summary(model2)
@@ -106,6 +105,8 @@ removing<-function(x){
 
 rownames(significants)<-lapply(rownames(significants),removing)
 
+stat$bet=as.character(stat$bet)
+
 stat[!stat$bet%in%rownames(significants),"bet"]="referencia"
 stat$bet<-as.factor(stat$bet)
 levels(stat$bet)
@@ -118,29 +119,29 @@ summary(model3)
 
 model4<-lm(kor~.+nem*bet,data=stat)
 summary(model4)
-stat[stat$bet=="crestszindróm",]
+stat[stat$bet=="crestszindrÃ³m",]
 
-egyuttallasok<- read_excel("stat2.xlsx")
+egyuttallasok<-read_excel("stat2.xlsx")
 egyuttallasok<-as.data.frame(egyuttallasok)
 egyuttallasok
 
 gyakok<- read_excel("gyakok.xlsx")
 gyakok<-as.data.frame(gyakok)
-gyakok<-gyakok[order(-gyakok["Mennyiségek"]),]
+gyakok<-gyakok[order(-gyakok["MennyisÃ©gek"]),]
 gyakok<-gyakok[1:20,]
 
-egyuttallasok2<-egyuttallasok[egyuttallasok$javitott%in%c(gyakok["Betegségek"])$Betegségek,]
+egyuttallasok2<-egyuttallasok[egyuttallasok$javitott%in%c(gyakok["BetegsÃ©gek"])$BetegsÃ©gek,]
 egyuttallasok2
 
 
-ggplot(data=egyuttallasok2,aes(x=javitott,fill=nem))+geom_bar(position = "fill")
-prop.table(table(egyuttallasok2$javitott,egyuttallasok2$nem),1)
+ggplot(data=egyuttallasok2,aes(x=javitott_r,fill=nem))+geom_bar(position = "fill")+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+prop.table(table(egyuttallasok2$javitott_r,egyuttallasok2$nem),1)
 library(questionr)
-cramer.v(table(egyuttallasok2$javitott,egyuttallasok2$nem))
+cramer.v(table(egyuttallasok$javitott_r,egyuttallasok$nem))
 
-ggplot(data=egyuttallasok2,aes(y=kor,fill=javitott))+geom_boxplot()
+ggplot(data=egyuttallasok2,aes(y=kor,fill=javitott_r))+geom_boxplot()
 by(egyuttallasok2$kor,egyuttallasok2$javitott,summary)
-vh=summary(aov(kor~javitott,data=egyuttallasok2))
+vh=summary(aov(kor~javitott_r,data=egyuttallasok))
 varhanyados=vh[[1]]$`Sum Sq`[1]/(vh[[1]]$`Sum Sq`[1]+vh[[1]]$`Sum Sq`[2])
 varhanyados^(1/2)
 
@@ -169,3 +170,4 @@ egyuttallasok$nem<-as.factor(egyuttallasok$nem)
 
 model5<-lm(kor~.+nem*javitott,data=egyuttallasok)
 summary(model5)
+
